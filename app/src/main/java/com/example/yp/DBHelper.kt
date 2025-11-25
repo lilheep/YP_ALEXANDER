@@ -1,17 +1,14 @@
-Напиши поэтому примеру package org.geeksforgeeks.demo
-
 import android.content.ContentValues
 import android.content.Context
-import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import com.example.yp.User
+
 
 class DBHelper(context: Context, factory: SQLiteDatabase.CursorFactory?) :
     SQLiteOpenHelper(context, DATABASE_NAME, factory, DATABASE_VERSION) {
 
-    // Called when the database is created for the first time
     override fun onCreate(db: SQLiteDatabase) {
-        // Таблица жанров
         val createGenresTable = """
             CREATE TABLE $TABLE_GENRES (
                 $GENRE_ID INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -20,7 +17,6 @@ class DBHelper(context: Context, factory: SQLiteDatabase.CursorFactory?) :
             )
         """.trimIndent()
 
-        // Таблица фильмов
         val createMoviesTable = """
             CREATE TABLE $TABLE_MOVIES (
                 $MOVIE_ID INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -39,17 +35,15 @@ class DBHelper(context: Context, factory: SQLiteDatabase.CursorFactory?) :
             )
         """.trimIndent()
 
-        // Таблица пользователей
         val createUsersTable = """
             CREATE TABLE $TABLE_USERS (
                 $USER_ID INTEGER PRIMARY KEY AUTOINCREMENT,
-                $USERNAME TEXT UNIQUE NOT NULL,
                 $EMAIL TEXT UNIQUE NOT NULL,
+                $PASSWORD TEXT NOT NULL,
                 $CREATED_AT DATETIME DEFAULT CURRENT_TIMESTAMP
             )
         """.trimIndent()
 
-        // Таблица рецензий
         val createReviewsTable = """
             CREATE TABLE $TABLE_REVIEWS (
                 $REVIEW_ID INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -63,7 +57,6 @@ class DBHelper(context: Context, factory: SQLiteDatabase.CursorFactory?) :
             )
         """.trimIndent()
 
-        // Таблица избранного
         val createFavoritesTable = """
             CREATE TABLE $TABLE_FAVORITES (
                 $FAVORITE_ID INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -82,13 +75,35 @@ class DBHelper(context: Context, factory: SQLiteDatabase.CursorFactory?) :
         db.execSQL(createReviewsTable)
         db.execSQL(createFavoritesTable)
 
-        // Включаем поддержку внешних ключей
         db.execSQL("PRAGMA foreign_keys = ON")
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
         db.execSQL("DROP TABLE IF EXISTS $TABLE_USERS")
         onCreate(db)
+    }
+
+    fun getByEmail(email: String): User? {
+        val cursor =
+            readableDatabase.rawQuery("SELECT * FROM users WHERE email = ?;", arrayOf(email))
+        if (cursor.moveToFirst()) {
+            val id = cursor.getInt(cursor.getColumnIndex("user_id"))
+            val email = cursor.getString(cursor.getColumnIndex("email"))
+            val password = cursor.getString(cursor.getColumnIndex("password"))
+            return User(email, password)
+        }
+        cursor.close()
+        return null
+    }
+
+    fun save(email: String, password: String):{
+        val db = writableDatabase
+        val values = ContentValues().apply {
+            put(EMAIL, email)
+            put(PASSWORD, password)
+        }
+        db.insert(TABLE_USERS, null, values)
+        db.close()
     }
 
     companion object {
@@ -125,7 +140,7 @@ class DBHelper(context: Context, factory: SQLiteDatabase.CursorFactory?) :
 
         // Колонки для пользователей
         const val USER_ID = "user_id"
-        const val USERNAME = "username"
+        const val PASSWORD = "password"
         const val EMAIL = "email"
         const val CREATED_AT = "created_at"
 
