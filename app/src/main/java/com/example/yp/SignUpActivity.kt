@@ -1,6 +1,7 @@
 package com.example.yp
 
 import DBHelper
+import android.content.Intent
 import android.os.Bundle
 import android.os.Message
 import android.widget.Button
@@ -21,24 +22,25 @@ class SignUpActivity : AppCompatActivity() {
     private lateinit var password: EditText
     private lateinit var passwordConfirm: EditText
 
-     fun registrationUser(email: String, password:  String, passwordConfirm:  String){
+     fun registrationUser(email: String, password:  String, passwordConfirm:  String): Boolean{
+         if (email.isEmpty() || password.isEmpty() || passwordConfirm.isEmpty()) {
+             Toast.makeText(this, "Заполните все поля", Toast.LENGTH_SHORT).show()
+             return false
+         }
+         if (dbHelper.getByEmail(email) != null) {
+             Toast.makeText(this, "Пользователь с таким email уже существует", Toast.LENGTH_SHORT).show()
+             return false
+         }
         if (password != passwordConfirm){
             Toast.makeText(this, "Пароли не совпадают", Toast.LENGTH_SHORT).show()
-            return
-        }
-        if (dbHelper.getByEmail(email) != null) {
-            Toast.makeText(this, "Пользователь с таким email уже существует", Toast.LENGTH_SHORT).show()
-            return
+            return false
         }
          dbHelper.save(
                  email,
                  password
              )
-         )
-
+         return true
     }
-
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,7 +59,18 @@ class SignUpActivity : AppCompatActivity() {
         passwordConfirm = findViewById(R.id.passwordConfirm)
 
         signUpButton.setOnClickListener { v ->
-            registrationUser(email.toString(), password.toString(), passwordConfirm.toString())
+            val succes = registrationUser(
+                email.text.toString().trim().lowercase(),
+                password.text.toString().trim(),
+                passwordConfirm.text.toString().trim()
+            )
+            if (succes){
+                startActivity(Intent(this, SignInActivity::class.java))
+                finish()
+            }
+        }
+        signInText.setOnClickListener { v ->
+            startActivity(Intent(this, SignInActivity::class.java))
         }
     }
 }

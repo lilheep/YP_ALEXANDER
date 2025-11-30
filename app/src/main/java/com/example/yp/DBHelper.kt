@@ -2,6 +2,7 @@ import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import com.example.yp.HashingPassword
 import com.example.yp.User
 
 
@@ -96,11 +97,11 @@ class DBHelper(context: Context, factory: SQLiteDatabase.CursorFactory?) :
         return null
     }
 
-    fun save(email: String, password: String):{
+    fun save(email: String, password: String){
         val db = writableDatabase
         val values = ContentValues().apply {
             put(EMAIL, email)
-            put(PASSWORD, password)
+            put(PASSWORD, HashingPassword.hashPassword(password))
         }
         db.insert(TABLE_USERS, null, values)
         db.close()
@@ -116,9 +117,6 @@ class DBHelper(context: Context, factory: SQLiteDatabase.CursorFactory?) :
         const val TABLE_USERS = "users"
         const val TABLE_REVIEWS = "reviews"
         const val TABLE_FAVORITES = "favorites"
-
-        // Общие колонки
-        const val ID = "id"
 
         // Колонки для жанров
         const val GENRE_ID = "genre_id"

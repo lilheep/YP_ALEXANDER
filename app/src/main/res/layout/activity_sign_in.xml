@@ -21,27 +21,29 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Email"
-            android:textColor="@color/red">
+            android:textColor="@color/border_red">
         </TextView>
         <EditText
             android:id="@+id/email"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="textEmailAddress"
-            android:backgroundTint="@color/red">
+            android:backgroundTint="@color/border_red"
+            android:textColor="@color/border_red">
         </EditText>
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Пароль"
-            android:textColor="@color/red">
+            android:textColor="@color/border_red">
         </TextView>
         <EditText
             android:id="@+id/password"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="textPassword"
-            android:backgroundTint="@color/red">
+            android:backgroundTint="@color/border_red"
+            android:textColor="@color/border_red">
         </EditText>
     </LinearLayout>
 
@@ -50,7 +52,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Войти"
-        style="@style/ButtonStyle"
+        style="@style/Button.Primary"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -62,7 +64,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Еще не зарегистрированы? Регистрация"
-        android:textColor="@color/red"
+        style="@style/Button.Text"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
