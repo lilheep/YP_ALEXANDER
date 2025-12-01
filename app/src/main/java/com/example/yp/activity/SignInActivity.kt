@@ -1,6 +1,6 @@
-package com.example.yp
+package com.example.yp.activity
 
-import DBHelper
+import com.example.yp.database.DBHelper
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
@@ -11,6 +11,8 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.example.yp.HashingPassword
+import com.example.yp.R
 
 class SignInActivity : AppCompatActivity() {
 
