@@ -1,7 +1,9 @@
 package com.example.yp.network.repository
 
 import com.example.yp.network.api.ApiClient
+import com.example.yp.network.models.Movie
 import com.example.yp.network.models.MovieResponse
+import com.example.yp.network.models.ReviewResponse
 import com.example.yp.utils.Constants.API_TOKEN
 
 class MovieRepository {
@@ -43,5 +45,20 @@ class MovieRepository {
             query = query,
             page = page
         ).body() ?: throw Exception("Empty response")
+    }
+
+    suspend fun getMovieDetails(movieId: Int): Movie {
+        return api.getMovieDetails(
+            token = API_TOKEN,
+            id = movieId
+        ).body() ?: throw Exception("Failed to load movie details")
+    }
+
+    suspend fun getReviews(movieId: Int, page: Int = 1): ReviewResponse {
+        return api.getReviews(
+            token = API_TOKEN,
+            movieId = movieId,
+            page = page
+        ).body() ?: throw Exception("Failed to load reviews")
     }
 }

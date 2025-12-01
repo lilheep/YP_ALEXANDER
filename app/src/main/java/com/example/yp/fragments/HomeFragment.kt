@@ -1,5 +1,6 @@
 package com.example.yp.fragments
 
+import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -11,6 +12,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.yp.R
+import com.example.yp.activity.MovieDetailActivity
 import com.example.yp.adapter.MoviesAdapter
 import com.example.yp.databinding.FragmentHomeBinding
 import com.example.yp.network.repository.MovieRepository
@@ -96,7 +98,14 @@ class HomeFragment : Fragment() {
     }
 
     private fun setupRecyclerView() {
+
         moviesAdapter = MoviesAdapter(moviesList) { movie ->
+            movie.id?.let { movieId ->
+                val intent = Intent(requireContext(), MovieDetailActivity::class.java).apply {
+                    putExtra("MOVIE_ID", movieId)
+                }
+                startActivity(intent)
+            }
         }
 
         binding.recyclerView.apply {

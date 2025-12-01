@@ -40,7 +40,7 @@ class MoviesAdapter(
                 tvTitle.text = movie.name ?: movie.alternativeName ?: "Без названия"
                 tvYear.text = movie.year?.toString() ?: "Неизвестен"
 
-                val countries = movie.countries?.take(2)?.joinToString(", ") { it.name }
+                val countries = movie.countries?.take(2)?.joinToString(", ") { it.name.toString() }
                 tvCountry.text = countries ?: "Неизвестно"
 
                 val rating = movie.rating?.kp
@@ -50,7 +50,7 @@ class MoviesAdapter(
                     "—"
                 }
 
-                val genres = movie.genres?.take(2)?.joinToString(", ") { it.name }
+                val genres = movie.genres?.take(2)?.joinToString(", ") { it.name.toString() }
                 tvGenres.text = genres ?: "Не указаны"
 
                 val posterUrl = movie.poster?.previewUrl ?: movie.poster?.url

@@ -28,6 +28,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".activity.MovieDetailActivity"
+            android:theme="@style/Theme.YP.NoActionBar"
+            android:parentActivityName=".activity.MainActivity" />
     </application>
 
 </manifest>
