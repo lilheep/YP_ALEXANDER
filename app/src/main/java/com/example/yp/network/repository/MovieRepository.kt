@@ -35,5 +35,13 @@ class MovieRepository {
             e.printStackTrace()
             MovieResponse(emptyList(), 0, 0, page, 0)
         }
+
+    }
+    suspend fun searchMovies(query: String, page: Int = 1): MovieResponse {
+        return api.searchMovies(
+            token = API_TOKEN,
+            query = query,
+            page = page
+        ).body() ?: throw Exception("Empty response")
     }
 }

@@ -1,9 +1,12 @@
 package com.example.yp.fragments
 
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -13,6 +16,8 @@ import com.example.yp.databinding.FragmentHomeBinding
 import com.example.yp.network.repository.MovieRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -26,6 +31,8 @@ class HomeFragment : Fragment() {
     private var totalPages = 1
     private var isLoading = false
     private var isLastPage = false
+    private var searchQuery: String? = null
+    private var searchJob: Job? = null
     private val moviesList = mutableListOf<com.example.yp.network.models.Movie>()
 
     override fun onCreateView(
@@ -40,8 +47,52 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        setupSearchView()
         setupRecyclerView()
         loadFirstPage()
+    }
+
+    private fun setupSearchView() {
+        binding.searchEditText.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                performSearch()
+                return@setOnEditorActionListener true
+            }
+            false
+        }
+
+        binding.searchEditText.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+
+            override fun afterTextChanged(s: Editable?) {
+                searchJob?.cancel()
+
+                val query = s.toString().trim()
+                if (query.isEmpty()) {
+                    searchQuery = null
+                    loadFirstPage()
+                } else {
+                    searchJob = CoroutineScope(Dispatchers.Main).launch {
+                        delay(500)
+                        searchQuery = query
+                        loadFirstPage()
+                    }
+                }
+            }
+        })
+    }
+
+    private fun performSearch() {
+        val query = binding.searchEditText.text.toString().trim()
+        if (query.isNotEmpty()) {
+            searchQuery = query
+            loadFirstPage()
+            binding.searchEditText.clearFocus()
+            val imm = requireContext().getSystemService(android.content.Context.INPUT_METHOD_SERVICE) as android.view.inputmethod.InputMethodManager
+            imm.hideSoftInputFromWindow(binding.searchEditText.windowToken, 0)
+        }
     }
 
     private fun setupRecyclerView() {
@@ -96,10 +147,15 @@ class HomeFragment : Fragment() {
 
         isLoading = true
         binding.progressBar.visibility = View.VISIBLE
+        binding.tvEmpty.visibility = View.GONE
 
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                val response = movieRepository.getMovies(currentPage)
+                val response = if (searchQuery.isNullOrEmpty()) {
+                    movieRepository.getMovies(currentPage)
+                } else {
+                    movieRepository.searchMovies(searchQuery!!, currentPage)
+                }
 
                 withContext(Dispatchers.Main) {
                     isLoading = false
@@ -113,14 +169,12 @@ class HomeFragment : Fragment() {
                         totalPages = response.pages
 
                         if (moviesList.isEmpty()) {
-                            binding.tvEmpty.visibility = View.VISIBLE
-                            binding.tvEmpty.text = "Фильмы не найдены"
+                            showEmptyMessage()
                         } else {
                             binding.tvEmpty.visibility = View.GONE
                         }
                     } else if (moviesList.isEmpty()) {
-                        binding.tvEmpty.visibility = View.VISIBLE
-                        binding.tvEmpty.text = "Фильмы не найдены"
+                        showEmptyMessage()
                     }
                 }
             } catch (e: Exception) {
@@ -136,8 +190,18 @@ class HomeFragment : Fragment() {
         }
     }
 
+    private fun showEmptyMessage() {
+        binding.tvEmpty.visibility = View.VISIBLE
+        binding.tvEmpty.text = if (searchQuery.isNullOrEmpty()) {
+            "Фильмы не найдены"
+        } else {
+            "По запросу \"$searchQuery\" ничего не найдено"
+        }
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
+        searchJob?.cancel()
         _binding = null
     }
 

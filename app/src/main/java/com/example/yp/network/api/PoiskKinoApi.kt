@@ -15,4 +15,12 @@ interface PoiskKinoApi {
         @Query("sortField") sortField: String = "rating.kp",
         @Query("sortType") sortType: String = "-1",
     ): Response<MovieResponse>
+
+    @GET("v1.4/movie/search")
+    suspend fun searchMovies(
+        @Header("X-API-KEY") token: String,
+        @Query("query") query: String,
+        @Query("limit") limit: Int = 20,
+        @Query("page") page: Int = 1,
+    ): Response<MovieResponse>
 }
