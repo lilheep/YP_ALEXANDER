@@ -1,26 +1,39 @@
 package com.example.yp.network.repository
 
 import com.example.yp.network.api.ApiClient
-import com.example.yp.network.models.Movie
+import com.example.yp.network.models.MovieResponse
 import com.example.yp.utils.Constants.API_TOKEN
 
 class MovieRepository {
     private val api = ApiClient.instance
 
-    suspend fun getMovies(page: Int = 1): List<Movie> {
+    suspend fun getMovies(page: Int = 1): MovieResponse {
         return try {
             val response = api.getMovies(
                 token = API_TOKEN,
                 limit = 20,
-                page = page
+                page = page,
+                sortField = "rating.kp",
+                sortType = "-1"
             )
+
+            println("API Response Code: ${response.code()}")
+            println("API Response Message: ${response.message()}")
+
             if (response.isSuccessful) {
-                response.body()?.docs ?: emptyList()
+                val movieResponse = response.body() ?: MovieResponse(emptyList(), 0, 0, page, 0)
+                println("Movies received: ${movieResponse.docs.size}")
+                println("Total pages: ${movieResponse.pages}")
+                movieResponse
             } else {
-                emptyList()
+                val errorBody = response.errorBody()?.string()
+                println("API Error Body: $errorBody")
+                MovieResponse(emptyList(), 0, 0, page, 0)
             }
         } catch (e: Exception) {
-            emptyList()
+            println("Exception in MovieRepository: ${e.message}")
+            e.printStackTrace()
+            MovieResponse(emptyList(), 0, 0, page, 0)
         }
     }
 }

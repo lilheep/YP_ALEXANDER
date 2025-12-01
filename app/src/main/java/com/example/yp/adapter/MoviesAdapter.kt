@@ -11,9 +11,10 @@ import com.example.yp.network.models.Movie
 import java.util.Locale
 
 class MoviesAdapter(
-    private val movies: List<Movie>,
+    private val movies: MutableList<Movie>,
     private val onItemClick: (Movie) -> Unit
 ) : RecyclerView.Adapter<MoviesAdapter.MovieViewHolder>() {
+
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MovieViewHolder {
         val binding = ItemMovieBinding.inflate(
@@ -37,7 +38,6 @@ class MoviesAdapter(
         fun bind(movie: Movie) {
             binding.apply {
                 tvTitle.text = movie.name ?: movie.alternativeName ?: "Без названия"
-
                 tvYear.text = movie.year?.toString() ?: "Неизвестен"
 
                 val countries = movie.countries?.take(2)?.joinToString(", ") { it.name }
