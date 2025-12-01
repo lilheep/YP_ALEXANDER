@@ -67,20 +67,25 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tvReviewAuthor" />
 
-        <TextView
-            android:id="@+id/tvReviewText"
+        <ScrollView
+            android:id="@+id/svReviewText"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_marginTop="12dp"
-            android:maxLines="8"
-            android:ellipsize="end"
-            style="@style/Text.Body"
-            android:lineSpacingExtra="4dp"
-            android:textSize="14sp"
+            android:layout_marginTop="8dp"
+            android:scrollbars="vertical"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tvReviewDate" />
+            app:layout_constraintTop_toBottomOf="@id/tvReviewDate">
+
+            <TextView
+                android:id="@+id/tvReviewText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="@style/Text.Body"
+                android:lineSpacingExtra="4dp"
+                android:textSize="14sp" />
+        </ScrollView>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -1,5 +1,5 @@
 package com.example.yp.utils
 
 object Constants {
-    const val API_TOKEN = "AQ1DEJW-KSJ47J6-JG4MWRG-EFM9AN0"
+    const val API_TOKEN = "X3XQ6KW-R2S42CJ-MPH9679-A6V8Z59"
 }

@@ -36,15 +36,19 @@ class ReviewsAdapter(
                 tvReviewTitle.text = review.title ?: "Без названия"
                 tvReviewAuthor.text = review.author ?: "Аноним"
                 tvReviewText.text = review.review ?: "Текст рецензии отсутствует"
-
                 review.date?.let { dateStr ->
                     try {
                         val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault())
                         val outputFormat = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())
                         val date = inputFormat.parse(dateStr)
-                        tvReviewDate.text = date?.let { outputFormat.format(it) } ?: dateStr
+                        tvReviewDate.text = date?.let { outputFormat.format(it) } ?: ""
                     } catch (e: Exception) {
-                        tvReviewDate.text = dateStr
+                        try {
+                            val parts = dateStr.split("T")[0]
+                            tvReviewDate.text = parts
+                        } catch (e2: Exception) {
+                            tvReviewDate.text = ""
+                        }
                     }
                 } ?: run {
                     tvReviewDate.text = ""
@@ -59,10 +63,10 @@ class ReviewsAdapter(
 
                 val type = review.type
                 tvReviewType.text = when (type) {
-                    "Позитивный" -> "👍 Положительная"
-                    "Негативный" -> "👎 Отрицательная"
-                    "Нейтральный" -> "😐 Нейтральная"
-                    else -> "📝 Рецензия"
+                    "Позитивный" -> "Положительная"
+                    "Негативный" -> "Отрицательная"
+                    "Нейтральный" -> "Нейтральная"
+                    else -> "Рецензия"
                 }
             }
         }

@@ -19,6 +19,18 @@
             app:title=""
             app:layout_scrollFlags="scroll|enterAlways"/>
 
+        <ImageView
+            android:id="@+id/btnFavorite"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_gravity="end"
+            android:layout_marginEnd="16dp"
+            android:src="@drawable/baseline_favorite_border_24"
+            android:contentDescription="Добавить в избранное"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true" />
+
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.core.widget.NestedScrollView
@@ -36,22 +48,12 @@
             <ImageView
                 android:id="@+id/ivBackdrop"
                 android:layout_width="0dp"
-                android:layout_height="200dp"
+                android:layout_height="250dp"
                 android:scaleType="centerCrop"
                 android:src="@drawable/placeholder_backdrop"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
-
-            <ImageView
-                android:id="@+id/ivPoster"
-                android:layout_width="120dp"
-                android:layout_height="180dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="-60dp"
-                android:elevation="8dp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/ivBackdrop" />
 
             <TextView
                 android:id="@+id/tvTitle"
@@ -64,7 +66,7 @@
                 android:textSize="24sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/ivPoster" />
+                app:layout_constraintTop_toBottomOf="@id/ivBackdrop" />
 
             <TextView
                 android:id="@+id/tvOriginalTitle"
@@ -142,8 +144,8 @@
                     android:id="@+id/tvDuration"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
                     style="@style/Text.Body"
+                    android:layout_marginStart="8dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@id/labelDuration"
                     app:layout_constraintTop_toTopOf="@id/labelDuration" />
@@ -152,7 +154,7 @@
                     android:id="@+id/labelAgeRating"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
+                    android:layout_marginTop="12dp"
                     style="@style/Text.Body"
                     android:text="Возрастной рейтинг:"
                     android:textColor="@color/black"
@@ -173,12 +175,12 @@
                     android:id="@+id/labelBudget"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
+                    android:layout_marginTop="12dp"
                     style="@style/Text.Body"
                     android:text="Бюджет:"
                     android:textColor="@color/black"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/labelAgeRating"/>
+                    app:layout_constraintTop_toBottomOf="@id/labelAgeRating" />
 
                 <TextView
                     android:id="@+id/tvBudget"
@@ -194,12 +196,12 @@
                     android:id="@+id/labelDirector"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
+                    android:layout_marginTop="12dp"
                     style="@style/Text.Body"
                     android:text="Режиссеры:"
                     android:textColor="@color/black"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/labelBudget"/>
+                    app:layout_constraintTop_toBottomOf="@id/labelBudget" />
 
                 <TextView
                     android:id="@+id/tvDirector"
@@ -207,6 +209,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     style="@style/Text.Body"
+                    android:maxLines="3"
+                    android:ellipsize="end"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@id/labelDirector"
                     app:layout_constraintTop_toTopOf="@id/labelDirector" />
@@ -215,12 +219,12 @@
                     android:id="@+id/labelActors"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
+                    android:layout_marginTop="12dp"
                     style="@style/Text.Body"
                     android:text="Актеры:"
                     android:textColor="@color/black"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/labelDirector"/>
+                    app:layout_constraintTop_toBottomOf="@id/tvDirector" />
 
                 <TextView
                     android:id="@+id/tvActors"
@@ -228,6 +232,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     style="@style/Text.Body"
+                    android:maxLines="3"
+                    android:ellipsize="end"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@id/labelActors"
                     app:layout_constraintTop_toTopOf="@id/labelActors" />
@@ -236,12 +242,12 @@
                     android:id="@+id/labelPremiere"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
+                    android:layout_marginTop="12dp"
                     style="@style/Text.Body"
                     android:text="Премьера:"
                     android:textColor="@color/black"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/labelActors"/>
+                    app:layout_constraintTop_toBottomOf="@id/tvActors" />
 
                 <TextView
                     android:id="@+id/tvPremiere"
@@ -249,6 +255,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     style="@style/Text.Body"
+                    android:maxLines="2"
+                    android:ellipsize="end"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@id/labelPremiere"
                     app:layout_constraintTop_toTopOf="@id/labelPremiere" />
@@ -257,12 +265,12 @@
                     android:id="@+id/labelBoxOffice"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
+                    android:layout_marginTop="12dp"
                     style="@style/Text.Body"
                     android:text="Сборы:"
                     android:textColor="@color/black"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/labelPremiere" />
+                    app:layout_constraintTop_toBottomOf="@id/tvPremiere" />
 
                 <TextView
                     android:id="@+id/tvBoxOffice"
