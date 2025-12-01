@@ -9,25 +9,21 @@
 
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tab_layout"
-        app:tabIndicatorColor="@color/border_red"
-        app:tabIndicatorHeight="4dp"
-        app:tabMode="fixed"
-        app:tabGravity="fill"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:tabGravity="fill"
+        app:tabIndicatorColor="@color/border_red"
+        app:tabIndicatorHeight="4dp">
     </com.google.android.material.tabs.TabLayout>
 
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/view"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toTopOf="@id/tab_layout"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:orientation="vertical"
->
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toTopOf="@+id/tab_layout"
+        app:layout_constraintTop_toTopOf="parent">
     </androidx.viewpager2.widget.ViewPager2>
 </androidx.constraintlayout.widget.ConstraintLayout>

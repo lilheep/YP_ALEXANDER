@@ -21,10 +21,9 @@ class MainActivity : AppCompatActivity() {
         viewPager.adapter = adapter
 
         TabLayoutMediator(tabLayout, viewPager) { tab, position ->
-            when (position) {
-                0 -> tab.text = "Главная"
-                1 -> tab.text = "Профиль"
-            }
+            val tabIcons = listOf(R.drawable.baseline_home_24, R.drawable.baseline_perm_identity_24)
+
+            tab.setIcon(tabIcons[position])
         }.attach()
     }
 }
