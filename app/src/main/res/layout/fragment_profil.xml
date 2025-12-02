@@ -1,16 +1,79 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragments.Profil">
+    android:orientation="vertical"
+    android:paddingTop="100dp"
+    android:layout_margin="40dp"
+    android:background="@color/background_white"
+    tools:context=".fragments.ProfileFragment">
 
-    <!-- TODO: Update blank fragment layout -->
     <TextView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="Profil"
-        android:textColor="@color/border_red">
-    </TextView>
+        android:layout_height="wrap_content"
+        android:text="Мой профиль"
+        android:textSize="28sp"
+        android:textStyle="bold"
+        android:textColor="@color/border_red"
+        android:gravity="center"
+        android:layout_marginBottom="32dp" />
 
-</FrameLayout>
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="4dp"
+        app:cardUseCompatPadding="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/EditText.Primary"
+            android:orientation="vertical"
+            android:padding="24dp">
+
+            <TextView
+                android:id="@+id/tvEmail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Email: loading..."
+                android:textSize="18sp"
+                android:textColor="@color/text_red"
+                android:gravity="center"
+                android:layout_marginBottom="8dp" />
+
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    <Button
+        android:layout_margin="80dp"
+        android:id="@+id/btnLogout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Выйти"
+        style="@style/Button.Primary"
+        android:layout_marginTop="24dp" />
+
+    <TextView
+        android:id="@+id/tvNotLoggedIn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Вы не вошли в аккаунт"
+        android:textSize="18sp"
+        android:textColor="@color/border_red"
+        android:gravity="center"
+        android:visibility="gone"
+        android:layout_marginTop="24dp" />
+
+    <Button
+        android:id="@+id/btnLogin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Войти"
+        style="@style/Button.Primary"
+        android:visibility="gone"
+        android:layout_marginTop="16dp" />
+
+</LinearLayout>

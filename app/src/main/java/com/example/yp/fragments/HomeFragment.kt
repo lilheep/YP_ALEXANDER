@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.yp.R
@@ -152,13 +153,14 @@ class HomeFragment : Fragment() {
     }
 
     private fun loadMovies() {
+        if (!isAdded || _binding == null) return
         if (isLoading) return
 
         isLoading = true
         binding.progressBar.visibility = View.VISIBLE
         binding.tvEmpty.visibility = View.GONE
 
-        CoroutineScope(Dispatchers.IO).launch {
+        viewLifecycleOwner.lifecycleScope.launch {
             try {
                 val response = if (searchQuery.isNullOrEmpty()) {
                     movieRepository.getMovies(currentPage)
@@ -166,34 +168,35 @@ class HomeFragment : Fragment() {
                     movieRepository.searchMovies(searchQuery!!, currentPage)
                 }
 
-                withContext(Dispatchers.Main) {
-                    isLoading = false
-                    binding.progressBar.visibility = View.GONE
+                if (!isAdded || _binding == null) return@launch
 
-                    if (response.docs.isNotEmpty()) {
-                        val startPosition = moviesList.size
-                        moviesList.addAll(response.docs)
-                        moviesAdapter.notifyItemRangeInserted(startPosition, response.docs.size)
+                isLoading = false
+                binding.progressBar.visibility = View.GONE
 
-                        totalPages = response.pages
+                if (response.docs.isNotEmpty()) {
+                    val startPosition = moviesList.size
+                    moviesList.addAll(response.docs)
+                    moviesAdapter.notifyItemRangeInserted(startPosition, response.docs.size)
 
-                        if (moviesList.isEmpty()) {
-                            showEmptyMessage()
-                        } else {
-                            binding.tvEmpty.visibility = View.GONE
-                        }
-                    } else if (moviesList.isEmpty()) {
+                    totalPages = response.pages
+
+                    if (moviesList.isEmpty()) {
                         showEmptyMessage()
+                    } else {
+                        binding.tvEmpty.visibility = View.GONE
                     }
+                } else if (moviesList.isEmpty()) {
+                    showEmptyMessage()
                 }
             } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
-                    isLoading = false
-                    binding.progressBar.visibility = View.GONE
-                    if (moviesList.isEmpty()) {
-                        binding.tvEmpty.visibility = View.VISIBLE
-                        binding.tvEmpty.text = "Ошибка загрузки: ${e.message}"
-                    }
+                if (!isAdded || _binding == null) return@launch
+
+                isLoading = false
+                binding.progressBar.visibility = View.GONE
+
+                if (moviesList.isEmpty()) {
+                    binding.tvEmpty.visibility = View.VISIBLE
+                    binding.tvEmpty.text = "Ошибка загрузки"
                 }
             }
         }
