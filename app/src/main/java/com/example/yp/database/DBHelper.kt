@@ -16,7 +16,8 @@ class DBHelper(context: Context, factory: SQLiteDatabase.CursorFactory?) :
                 $USER_ID INTEGER PRIMARY KEY AUTOINCREMENT,
                 $EMAIL TEXT UNIQUE NOT NULL,
                 $PASSWORD TEXT NOT NULL,
-                $CREATED_AT DATETIME DEFAULT CURRENT_TIMESTAMP
+                $CREATED_AT DATETIME DEFAULT CURRENT_TIMESTAMP,
+                $IS_DELETED INTEGER DEFAULT 0
             )
         """.trimIndent()
 
@@ -45,13 +46,21 @@ class DBHelper(context: Context, factory: SQLiteDatabase.CursorFactory?) :
             db.execSQL("DROP TABLE IF EXISTS $TABLE_USERS")
             onCreate(db)
         }
+        if (oldVersion < 5) {
+            db.execSQL("ALTER TABLE $TABLE_USERS ADD COLUMN $IS_DELETED INTEGER DEFAULT 0")
+        }
+    }
+
+    override fun onOpen(db: SQLiteDatabase) {
+        super.onOpen(db)
+        db.execSQL("PRAGMA foreign_keys = ON")
     }
 
     fun getByEmail(email: String): User? {
         val cursor = readableDatabase.query(
             TABLE_USERS,
-            arrayOf(USER_ID, EMAIL, PASSWORD),
-            "$EMAIL = ?",
+            arrayOf(USER_ID, EMAIL, PASSWORD, IS_DELETED),
+            "$EMAIL = ? AND $IS_DELETED = 0",
             arrayOf(email),
             null, null, null
         )
@@ -71,10 +80,113 @@ class DBHelper(context: Context, factory: SQLiteDatabase.CursorFactory?) :
         val values = ContentValues().apply {
             put(EMAIL, email)
             put(PASSWORD, HashingPassword.hashPassword(password))
+            put(IS_DELETED, 0)
         }
         val result = db.insert(TABLE_USERS, null, values)
         db.close()
         return result
+    }
+
+    fun updateEmail(userId: Int, newEmail: String, password: String): Boolean {
+        val db = writableDatabase
+        val user = getById(userId)
+
+        if (user == null || !HashingPassword.verifyPassword(password, user.password)) {
+            return false
+        }
+
+        val values = ContentValues().apply {
+            put(EMAIL, newEmail)
+        }
+
+        val result = db.update(
+            TABLE_USERS,
+            values,
+            "$USER_ID = ?",
+            arrayOf(userId.toString())
+        )
+        db.close()
+        return result > 0
+    }
+
+    fun updatePassword(userId: Int, oldPassword: String, newPassword: String): Boolean {
+        val db = writableDatabase
+        val user = getById(userId)
+
+        if (user == null || !HashingPassword.verifyPassword(oldPassword, user.password)) {
+            return false
+        }
+
+        val values = ContentValues().apply {
+            put(PASSWORD, HashingPassword.hashPassword(newPassword))
+        }
+
+        val result = db.update(
+            TABLE_USERS,
+            values,
+            "$USER_ID = ?",
+            arrayOf(userId.toString())
+        )
+        db.close()
+        return result > 0
+    }
+
+    fun softDeleteUser(userId: Int, password: String): Boolean {
+        val db = writableDatabase
+        val user = getById(userId)
+
+        if (user == null || !HashingPassword.verifyPassword(password, user.password)) {
+            return false
+        }
+
+        val values = ContentValues().apply {
+            put(IS_DELETED, 1)
+        }
+
+        val result = db.update(
+            TABLE_USERS,
+            values,
+            "$USER_ID = ?",
+            arrayOf(userId.toString())
+        )
+        db.close()
+        return result > 0
+    }
+
+    fun hardDeleteUser(userId: Int, password: String): Boolean {
+        val db = writableDatabase
+        val user = getById(userId)
+
+        if (user == null || !HashingPassword.verifyPassword(password, user.password)) {
+            return false
+        }
+
+        val result = db.delete(
+            TABLE_USERS,
+            "$USER_ID = ?",
+            arrayOf(userId.toString())
+        )
+        db.close()
+        return result > 0
+    }
+
+    private fun getById(userId: Int): User? {
+        val cursor = readableDatabase.query(
+            TABLE_USERS,
+            arrayOf(USER_ID, EMAIL, PASSWORD),
+            "$USER_ID = ?",
+            arrayOf(userId.toString()),
+            null, null, null
+        )
+
+        return if (cursor.moveToFirst()) {
+            val id = cursor.getInt(cursor.getColumnIndexOrThrow(USER_ID))
+            val email = cursor.getString(cursor.getColumnIndexOrThrow(EMAIL))
+            val password = cursor.getString(cursor.getColumnIndexOrThrow(PASSWORD))
+            User(id, email, password)
+        } else {
+            null
+        }.also { cursor.close() }
     }
 
 
@@ -158,12 +270,14 @@ class DBHelper(context: Context, factory: SQLiteDatabase.CursorFactory?) :
 
     companion object {
         private const val DATABASE_NAME = "MoviesGuide.db"
-        private const val DATABASE_VERSION = 4
+        private const val DATABASE_VERSION = 5
         const val TABLE_USERS = "users"
         const val USER_ID = "user_id"
         const val EMAIL = "email"
         const val PASSWORD = "password"
         const val CREATED_AT = "created_at"
+        const val IS_DELETED = "is_deleted"
+
 
         const val TABLE_FAVORITES = "favorites"
         const val FAVORITE_ID = "favorite_id"
