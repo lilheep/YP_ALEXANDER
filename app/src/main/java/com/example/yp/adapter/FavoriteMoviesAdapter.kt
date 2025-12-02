@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import coil.transform.RoundedCornersTransformation
+import coil.request.CachePolicy
 import com.example.yp.R
 import com.example.yp.databinding.ItemMovieBinding
 import com.example.yp.network.models.FavoriteMovie
@@ -51,6 +52,8 @@ class FavoriteMoviesAdapter(
 
         fun bind(favorite: FavoriteMovie) {
             binding.apply {
+                ivPoster.setImageDrawable(null)
+
                 tvTitle.text = favorite.movieTitle
                 tvYear.text = favorite.movieYear.toString()
 
@@ -64,17 +67,7 @@ class FavoriteMoviesAdapter(
                 tvCountry.visibility = View.GONE
                 tvGenres.visibility = View.GONE
 
-                val posterUrl = favorite.moviePosterUrl
-                if (posterUrl.isNotEmpty()) {
-                    ivPoster.load(posterUrl) {
-                        crossfade(true)
-                        transformations(RoundedCornersTransformation(12f))
-                        placeholder(R.drawable.placeholder_poster)
-                        error(R.drawable.placeholder_poster)
-                    }
-                } else {
-                    ivPoster.setImageResource(R.drawable.placeholder_poster)
-                }
+                loadPosterForFavorite(favorite)
 
                 cardView.setOnClickListener {
                     onItemClick(favorite)
@@ -84,6 +77,50 @@ class FavoriteMoviesAdapter(
                     onFavoriteClick(favorite)
                     true
                 }
+            }
+        }
+
+        private fun loadPosterForFavorite(favorite: FavoriteMovie) {
+            val posterUrl = favorite.moviePosterUrl
+
+            if (isValidPosterUrl(posterUrl)) {
+                binding.ivPoster.load(posterUrl) {
+                    crossfade(true)
+                    transformations(RoundedCornersTransformation(12f))
+                    placeholder(R.drawable.placeholder_poster)
+                    error(R.drawable.placeholder_poster)
+
+                    memoryCachePolicy(CachePolicy.ENABLED)
+                    diskCachePolicy(CachePolicy.ENABLED)
+                    size(400, 600)
+                    allowHardware(true)
+
+                    listener(
+                        onError = { _, _ ->
+                            binding.ivPoster.setImageResource(R.drawable.glow_red)
+                        }
+                    )
+                }
+            } else {
+                binding.ivPoster.load(R.drawable.glow_red) {
+                    crossfade(true)
+                    transformations(RoundedCornersTransformation(12f))
+                    memoryCachePolicy(CachePolicy.ENABLED)
+                    diskCachePolicy(CachePolicy.ENABLED)
+                }
+            }
+        }
+
+        private fun isValidPosterUrl(url: String): Boolean {
+            if (url.isEmpty()) return false
+            if (url.equals("null", ignoreCase = true)) return false
+            if (!url.startsWith("http://") && !url.startsWith("https://")) return false
+
+            return try {
+                java.net.URL(url)
+                true
+            } catch (e: Exception) {
+                false
             }
         }
     }

@@ -117,11 +117,17 @@ class MovieDetailActivity : AppCompatActivity() {
                 showFavoriteRemovedSnackbar()
             }
         } else {
+            val cleanedPosterUrl = when {
+                moviePosterUrl.isNullOrEmpty() -> ""
+                moviePosterUrl.equals("null", ignoreCase = true) -> ""
+                else -> moviePosterUrl
+            }
+
             val added = dbHelper.addFavorite(
                 userId = userId,
                 movieId = movieId,
                 movieTitle = movieTitle,
-                moviePosterUrl = moviePosterUrl,
+                moviePosterUrl = cleanedPosterUrl,
                 movieYear = movieYear,
                 movieRating = movieRating
             )
