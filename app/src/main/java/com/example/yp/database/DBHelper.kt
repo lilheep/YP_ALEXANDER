@@ -35,9 +35,27 @@ class DBHelper(context: Context, factory: SQLiteDatabase.CursorFactory?) :
                 UNIQUE($USER_ID, $MOVIE_ID)
             )
         """.trimIndent()
+        val createReviewsTable = """
+            CREATE TABLE $TABLE_USER_REVIEWS (
+                $REVIEW_ID INTEGER PRIMARY KEY AUTOINCREMENT,
+                $USER_ID INTEGER NOT NULL,
+                $MOVIE_ID INTEGER NOT NULL,
+                $MOVIE_TITLE TEXT NOT NULL,
+                $REVIEW_TITLE TEXT NOT NULL,
+                $REVIEW_CONTENT TEXT NOT NULL,
+                $USER_RATING REAL CHECK($USER_RATING >= 0 AND $USER_RATING <= 10),
+                $REVIEW_TYPE TEXT CHECK($REVIEW_TYPE IN ('Позитивный', 'Нейтральный', 'Негативный')),
+                $CREATED_AT DATETIME DEFAULT CURRENT_TIMESTAMP,
+                $UPDATED_AT DATETIME DEFAULT CURRENT_TIMESTAMP,
+                $IS_DELETED INTEGER DEFAULT 0,
+                FOREIGN KEY ($USER_ID) REFERENCES $TABLE_USERS($USER_ID) ON DELETE CASCADE,
+                UNIQUE($USER_ID, $MOVIE_ID)
+            )
+        """.trimIndent()
 
         db.execSQL(createUsersTable)
         db.execSQL(createFavoritesTable)
+        db.execSQL(createReviewsTable)
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
@@ -268,16 +286,18 @@ class DBHelper(context: Context, factory: SQLiteDatabase.CursorFactory?) :
         return favorites
     }
 
+
+
     companion object {
         private const val DATABASE_NAME = "MoviesGuide.db"
         private const val DATABASE_VERSION = 5
+
         const val TABLE_USERS = "users"
         const val USER_ID = "user_id"
         const val EMAIL = "email"
         const val PASSWORD = "password"
         const val CREATED_AT = "created_at"
         const val IS_DELETED = "is_deleted"
-
 
         const val TABLE_FAVORITES = "favorites"
         const val FAVORITE_ID = "favorite_id"
@@ -286,5 +306,13 @@ class DBHelper(context: Context, factory: SQLiteDatabase.CursorFactory?) :
         const val MOVIE_POSTER_URL = "movie_poster_url"
         const val MOVIE_YEAR = "movie_year"
         const val MOVIE_RATING = "movie_rating"
+
+        const val TABLE_USER_REVIEWS = "user_reviews"
+        const val REVIEW_ID = "review_id"
+        const val REVIEW_TITLE = "review_title"
+        const val REVIEW_CONTENT = "review_content"
+        const val USER_RATING = "user_rating"
+        const val REVIEW_TYPE = "review_type"
+        const val UPDATED_AT = "updated_at"
     }
 }
