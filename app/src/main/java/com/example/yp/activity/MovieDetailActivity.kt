@@ -207,13 +207,11 @@ class MovieDetailActivity : AppCompatActivity() {
                     binding.progressBar.visibility = View.GONE
                     binding.scrollView.visibility = View.VISIBLE
 
-                    // Сохраняем данные для избранного
                     movieTitle = movie.name ?: movie.alternativeName ?: "Без названия"
                     moviePosterUrl = movie.poster?.url
                     movieYear = movie.year
                     movieRating = movie.rating?.kp
 
-                    // Загрузка backdrop или poster как fallback
                     val backdropUrl = movie.backdrop?.url
                     val posterUrl = movie.poster?.url
 
@@ -240,52 +238,42 @@ class MovieDetailActivity : AppCompatActivity() {
                     binding.tvTitle.text = movieTitle
                     binding.tvOriginalTitle.text = movie.alternativeName ?: ""
 
-                    // Рейтинг
                     val rating = movie.rating?.kp
                     binding.tvRating.text = if (rating != null && rating > 0) {
                         String.format(Locale.getDefault(), "%.1f", rating)
                     } else {
                         "—"
                     }
-
-                    // Год, страна, жанры
                     val year = movie.year?.toString() ?: "Неизвестен"
                     val countries = movie.countries?.joinToString(", ") { it.name ?: "" } ?: "Неизвестно"
                     val genres = movie.genres?.joinToString(", ") { it.name ?: "" } ?: "Не указаны"
                     binding.tvMeta.text = "$year • $countries • $genres"
 
-                    // Описание
                     binding.tvDescription.text = movie.description ?: movie.shortDescription ?: "Описание отсутствует"
 
-                    // Длительность
                     val duration = movie.movieLength?.let { "$it мин" } ?: "Неизвестно"
                     binding.tvDuration.text = duration
 
-                    // Возрастной рейтинг
                     val ageRating = movie.ageRating?.let { "$it+" } ?: "Не указан"
                     binding.tvAgeRating.text = ageRating
 
-                    // Бюджет
                     val budget = movie.budget?.value?.let {
                         NumberFormat.getNumberInstance(Locale.US).format(it) + " " + (movie.budget.currency ?: "")
                     } ?: "Неизвестен"
                     binding.tvBudget.text = budget
 
-                    // Режиссеры
                     val directors = movie.persons
                         ?.filter { it.profession?.contains("режиссер") == true || it.profession?.contains("director") == true }
                         ?.take(3)
                         ?.joinToString(", ") { it.name ?: "" }
                     binding.tvDirector.text = directors ?: "Не указаны"
 
-                    // Актёры
                     val actors = movie.persons
                         ?.filter { it.profession?.contains("актер") == true || it.profession?.contains("actor") == true }
                         ?.take(5)
                         ?.joinToString(", ") { it.name ?: "" }
                     binding.tvActors.text = actors ?: "Не указаны"
 
-                    // Премьера (только дата, без времени)
                     val premiere = movie.premiere?.russia ?: movie.premiere?.world ?: "Неизвестна"
                     val premiereDate = if (premiere != "Неизвестна" && premiere.contains("T")) {
                         premiere.split("T")[0]
@@ -294,16 +282,13 @@ class MovieDetailActivity : AppCompatActivity() {
                     }
                     binding.tvPremiere.text = premiereDate
 
-                    // Сборы
                     val boxOffice = movie.fees?.world?.value?.let {
                         NumberFormat.getNumberInstance(Locale.US).format(it) + " " + (movie.fees.world.currency ?: "")
                     } ?: "Неизвестны"
                     binding.tvBoxOffice.text = boxOffice
 
-                    // Загружаем рецензии
                     loadReviews()
 
-                    // Проверяем статус избранного ПОСЛЕ загрузки данных фильма
                     checkFavoriteStatus()
                 }
             } catch (e: Exception) {

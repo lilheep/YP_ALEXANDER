@@ -67,12 +67,12 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tvReviewAuthor" />
 
-        <ScrollView
-            android:id="@+id/svReviewText"
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/nsvReviewText"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_marginTop="8dp"
-            android:scrollbars="vertical"
+            android:fillViewport="true"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -85,7 +85,7 @@
                 style="@style/Text.Body"
                 android:lineSpacingExtra="4dp"
                 android:textSize="14sp" />
-        </ScrollView>
+        </androidx.core.widget.NestedScrollView>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

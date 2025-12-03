@@ -38,7 +38,8 @@ class ReviewsAdapter(
                 tvReviewText.text = review.review ?: "Текст рецензии отсутствует"
                 review.date?.let { dateStr ->
                     try {
-                        val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault())
+                        val inputFormat =
+                            SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault())
                         val outputFormat = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())
                         val date = inputFormat.parse(dateStr)
                         tvReviewDate.text = date?.let { outputFormat.format(it) } ?: ""
@@ -55,11 +56,7 @@ class ReviewsAdapter(
                 }
 
                 val userRating = review.userRating
-                tvUserRating.text = if (userRating != null && userRating > 0) {
-                    "$userRating/10"
-                } else {
-                    "—"
-                }
+                tvUserRating.text = formatRating(userRating)
 
                 val type = review.type
                 tvReviewType.text = when (type) {
@@ -68,6 +65,29 @@ class ReviewsAdapter(
                     "Нейтральный" -> "Нейтральная"
                     else -> "Рецензия"
                 }
+            }
+        }
+
+        private fun formatRating(rating: Int?): String {
+            if (rating == null || rating <= 0) return "—"
+            return when {
+                rating in 1..10 -> "$rating/10"
+
+                rating in 11..100 -> {
+                    val normalized = rating / 10.0
+                    "${String.format(Locale.getDefault(), "%.1f", normalized)}/10"
+                }
+
+                rating in 101..1000 -> {
+                    val normalized = rating / 100.0
+                    if (normalized <= 10.0) {
+                        "${String.format(Locale.getDefault(), "%.1f", normalized)}/10"
+                    } else {
+                        "—"
+                    }
+                }
+
+                else -> "—"
             }
         }
     }
