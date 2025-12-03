@@ -31,7 +31,7 @@ class SignUpActivity : AppCompatActivity() {
              Toast.makeText(this, "Заполните все поля", Toast.LENGTH_SHORT).show()
              return false
          }
-         if (Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+         if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
              Toast.makeText(this, "Почта введена в неверном формате", Toast.LENGTH_SHORT).show()
              return false
          }
